@@ -1,0 +1,54 @@
+services:
+  redis-data-protection:
+    image: tms-redis:latest
+    container_name: tms-redis-data-protection
+    restart: "no"
+    ports:
+      - "6379:6379"
+    entrypoint: ["redis-server"]
+    command: >
+      /usr/local/etc/redis/redis.conf --maxmemory-policy noeviction --appendonly yes
+  
+  redis-session-cache:
+    image: tms-redis:latest
+    container_name: tms-redis-session-cache
+    restart: "no"
+    ports:
+      - "6380:6379"
+    entrypoint: ["redis-server"]
+    command: >
+      /usr/local/etc/redis/redis.conf --maxmemory-policy allkeys-lru --appendonly no
+  
+  HashiCorp-Vault:
+    image: tms-vault:latest
+    container_name: tms-vault
+    restart: "no"
+    ports:
+      - "8200:8200"
+    cap_add:
+      - IPC_LOCK
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_ROOT_TOKEN_ID}
+
+  SqlServer:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: DevServer
+    hostname: DevServer
+    restart: "unless-stopped"
+    networks:
+      - tms_network
+    ports:
+      - "1433:1433"
+    environment:
+      MSSQL_mssql_pwd: ${MSSQL_PWD}
+      ACCEPT_EULA: "Y"
+      TZ: "Europe/London"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+networks:
+  tms_network:
+
+volumes:
+  mssql_data:
+    external: true
