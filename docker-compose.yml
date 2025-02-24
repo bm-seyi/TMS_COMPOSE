@@ -7,7 +7,7 @@ services:
       - "6379:6379"
     entrypoint: ["redis-server"]
     command: >
-      /usr/local/etc/redis/redis.conf --maxmemory-policy noeviction --appendonly yes
+      /usr/local/etc/redis/redis.conf --maxmemory-policy noeviction --appendonly yes --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
   
   redis-session-cache:
     image: tms-redis:latest
@@ -17,7 +17,7 @@ services:
       - "6380:6379"
     entrypoint: ["redis-server"]
     command: >
-      /usr/local/etc/redis/redis.conf --maxmemory-policy allkeys-lru --appendonly no
+      /usr/local/etc/redis/redis.conf --maxmemory-policy allkeys-lru --appendonly no --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
   
   HashiCorp-Vault:
     image: tms-vault:latest
