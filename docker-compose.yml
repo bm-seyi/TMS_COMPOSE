@@ -24,15 +24,19 @@ services:
       /usr/local/etc/redis/redis.conf --maxmemory-policy allkeys-lru --appendonly no --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
   
   HashiCorp-Vault:
-    image: tms-vault:latest
+    image: hashicorp/vault:latest
     container_name: tms-vault
     restart: "no"
     ports:
       - "8200:8200"
     cap_add:
       - IPC_LOCK
+    volumes:
+      - ./entrypoint.sh:/usr/local/bin/entrypoint.sh
     environment:
+      VAULT_ADDR: http://0.0.0.0:8200
       VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_ROOT_TOKEN_ID}
+    entrypoint: /usr/local/bin/entrypoint.sh
 
   SqlServer:
     image: mcr.microsoft.com/mssql/server:2022-latest

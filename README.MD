@@ -6,7 +6,7 @@ This project sets up a development environment using Docker Compose, including R
 ## Services
 
 ### 1. Redis Data Protection (`redis-data-protection`)
-- **Image:** `tms-redis:latest`
+- **Image:** `redis`
 - **Container Name:** `tms-redis-data-protection`
 - **Port:** `6379:6379`
 - **Restart Policy:** `no`
@@ -15,7 +15,7 @@ This project sets up a development environment using Docker Compose, including R
   - Append-only file enabled
 
 ### 2. Redis Session Cache (`redis-session-cache`)
-- **Image:** `tms-redis:latest`
+- **Image:** `redis`
 - **Container Name:** `tms-redis-session-cache`
 - **Port:** `6380:6379`
 - **Restart Policy:** `no`
@@ -24,7 +24,7 @@ This project sets up a development environment using Docker Compose, including R
   - Append-only file disabled
 
 ### 3. HashiCorp Vault (`HashiCorp-Vault`)
-- **Image:** `tms-vault:latest`
+- **Image:** `hashicorp/vault:latest`
 - **Container Name:** `tms-vault`
 - **Port:** `8200:8200`
 - **Restart Policy:** `no`

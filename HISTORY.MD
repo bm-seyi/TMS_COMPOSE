@@ -21,3 +21,14 @@ First development version
 
 ### Fixed/Updated
 - Updated Redis image from `tms-redis:latest` to `redis:8.0-M03` for `redis-data-protection` and `redis-session-cache`.
+
+
+## 0.1.1
+## Added
+- Added `entrypoint.sh` script for initializing Vault in development mode and configuring the PKI secrets engine with root certificates and URLs.
+- Added Vault entrypoint configuration in the `docker-compose.yml` file to specify the newly added `entrypoint.sh` file.
+- Updated Vault service in `docker-compose.yml` to use the image `hashicorp/vault:latest` instead of the previous `tms-vault:latest`.
+- Added environment variable `VAULT_ADDR` to the Vault service configuration in `docker-compose.yml`.
+
+## Fixed/Updated
+- Updated the Redis services' Docker image from `tms-redis:latest` to the official `redis` image in both `README.MD` and `docker-compose.yml`.
