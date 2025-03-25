@@ -1,20 +1,24 @@
 services:
   redis-data-protection:
-    image: tms-redis:latest
+    image: redis:8.0-M03
     container_name: tms-redis-data-protection
     restart: "no"
     ports:
       - "6379:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
     entrypoint: ["redis-server"]
     command: >
       /usr/local/etc/redis/redis.conf --maxmemory-policy noeviction --appendonly yes --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
   
   redis-session-cache:
-    image: tms-redis:latest
+    image:  redis:8.0-M03
     container_name: tms-redis-session-cache
     restart: "no"
     ports:
       - "6380:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
     entrypoint: ["redis-server"]
     command: >
       /usr/local/etc/redis/redis.conf --maxmemory-policy allkeys-lru --appendonly no --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
@@ -48,7 +52,10 @@ services:
 
 networks:
   tms_network:
+    name: tms_network
+    external: true
 
 volumes:
   mssql_data:
+    name: mssql_data
     external: true
