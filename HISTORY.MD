@@ -45,3 +45,7 @@ First development version
 ## 0.1.3
 ## Fixed/Updated
 - Added step in the GitHub Actions workflow to install Docker Compose (`v2.34.0`), including a version verification step.
+
+## 0.1.4
+## Fixed/Updated
+- Updated the Docker Compose installation URL in the GitHub Actions workflow to download the `x86_64` version instead of the `aarch64` version.
