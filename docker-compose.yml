@@ -54,7 +54,7 @@ services:
     volumes:
       - mssql_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${MSSQL_PWD} -C -Q \"SELECT 1\""]
+      test: ["CMD-SHELL",  "grep -q 'SQL Server is now ready for client connections. This is an informational message; no user action is required.' /var/opt/mssql/log/errorlog || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 12

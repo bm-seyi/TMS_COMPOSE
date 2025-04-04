@@ -63,5 +63,14 @@ First development version
 - Removed the old SQL Server readiness check in the GitHub Actions workflow that manually checked the container’s availability using `sqlcmd`.
 
 ## 0.1.7
-## Fixed/Updated
+### Fixed/Updated
 - Updated the SQL Server health check logic in the GitHub Actions workflow to use a retry mechanism with a maximum of 30 retries, ensuring better handling of container startup time. The workflow now reports the current health status and exits with an error if the container does not become healthy within the retry limit.
+
+
+## 0.1.8
+### Fixed/Updated
+- Relocated the SQL Server health check logic within the GitHub Actions workflow to a later stage, improving the logical flow and grouping it with other test-related steps.
+- Updated the `SqlServer` service's `healthcheck` command in `docker-compose.yml` to verify readiness by checking for a specific message in the SQL Server error log, instead of using `sqlcmd`. This improves reliability in detecting when the database is fully ready for client connections.
+
+### Removed
+- Removed the earlier placement of the SQL Server health check script from the GitHub Actions workflow to avoid duplication and improve structure.

@@ -33,26 +33,6 @@ jobs:
     - name: Start services with Docker Compose
       run: docker-compose up -d
     
-    - name: Wait for SQL Server to be healthy
-      run: |
-        retries=0
-        max_retries=30
-        while [ $retries -lt $max_retries ]; do
-        health_status=$(docker inspect --format '{{.State.Health.Status}}' DevServer)
-        echo "Current Health Status: $health_status"
-        if [ "$health_status" == "healthy" ]; then
-            echo "SQL Server is healthy!"
-            break
-        fi
-        if [ $retries -ge $max_retries ]; then
-            echo "SQL Server did not become healthy in time"
-            exit 1
-        fi
-        echo "Waiting for SQL Server to be healthy..."
-        sleep 5
-        retries=$((retries + 1))
-        done
-
     - name: Test Redis connection
       run: |
         docker exec tms-redis-data-protection redis-cli -a $REDIS_PWD ping | grep PONG
@@ -65,6 +45,25 @@ jobs:
           docker-compose logs
           exit 1
         }
+    - name: Wait for SQL Server to be healthy
+      run: |
+          retries=0
+          max_retries=30
+          while [ $retries -lt $max_retries ]; do
+          health_status=$(docker inspect --format '{{.State.Health.Status}}' DevServer)
+          echo "Current Health Status: $health_status"
+          if [ "$health_status" == "healthy" ]; then
+              echo "SQL Server is healthy!"
+              break
+          fi
+          if [ $retries -ge $max_retries ]; then
+              echo "SQL Server did not become healthy in time"
+              exit 1
+          fi
+          echo "Waiting for SQL Server to be healthy..."
+          sleep 5
+          retries=$((retries + 1))
+          done
 
     - name: Stop and clean up
       if: always()
