@@ -53,3 +53,11 @@ First development version
 ## 0.1.5
 ### Fixed/Updated
 - Updated the `entrypoint` for the `vault` service in `docker-compose.yml` to ensure the `entrypoint.sh` script is executable before being executed. The new `entrypoint` command adds a `chmod +x` to the script before running it.
+
+## 0.1.6
+### Fixed/Updated
+- Modified the GitHub Actions workflow to use a `timeout` approach for checking the health of the SQL Server container, replacing the old loop with a health check using Docker’s built-in `docker inspect` command.
+- Added a `healthcheck` to the `SqlServer` service in `docker-compose.yml` to monitor the health of the SQL Server container by running a SQL query and retrying if necessary.
+
+### Removed
+- Removed the old SQL Server readiness check in the GitHub Actions workflow that manually checked the container’s availability using `sqlcmd`.

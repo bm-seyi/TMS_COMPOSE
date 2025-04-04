@@ -37,7 +37,7 @@ services:
       VAULT_ADDR: http://0.0.0.0:8200
       VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_ROOT_TOKEN_ID}
     entrypoint: ["/bin/sh", "-c", "chmod +x /usr/local/bin/entrypoint.sh && /usr/local/bin/entrypoint.sh"]
-    
+
   SqlServer:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: DevServer
@@ -53,6 +53,11 @@ services:
       TZ: "Europe/London"
     volumes:
       - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${MSSQL_PWD} -C -Q \"SELECT 1\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
 networks:
   tms_network:

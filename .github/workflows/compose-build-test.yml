@@ -24,7 +24,7 @@ jobs:
         sudo curl -L "https://github.com/docker/compose/releases/download/v2.34.0/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
         sudo chmod +x /usr/local/bin/docker-compose
         docker-compose --version  # Verify installation
-        
+
 
     - name: Create mssql_data volume if not exists
       run: |
@@ -32,20 +32,13 @@ jobs:
 
     - name: Start services with Docker Compose
       run: docker-compose up -d
-
-    - name: Wait for SQL Server to be ready
+    
+    - name: Wait for SQL Server to be healthy
       run: |
-        echo "Waiting for SQL Server to start..."
-        for i in {1..30}; do
-          if docker exec DevServer /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $MSSQL_PWD -Q "SELECT 1" > /dev/null 2>&1; then
-            echo "SQL Server is up!"
-            exit 0
-          fi
-          sleep 2
-        done
-        echo "SQL Server did not start in time."
-        docker-compose logs
-        exit 1
+        timeout 300 bash -c 'until [ "$(docker inspect --format "{{.State.Health.Status}}" DevServer)" == "healthy" ]; do
+          echo "Waiting for SQL Server to be healthy..."
+          sleep 5
+        done'
 
     - name: Test Redis connection
       run: |
