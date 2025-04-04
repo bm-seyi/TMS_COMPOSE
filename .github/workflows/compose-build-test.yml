@@ -1,0 +1,58 @@
+name: Docker Compose Integration Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  docker-integration-test:
+    runs-on: ubuntu-latest
+
+    env:
+      REDIS_PWD: testpassword
+      VAULT_DEV_ROOT_TOKEN_ID: root_token
+      MSSQL_PWD: "StrongPassword123"
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Create mssql_data volume if not exists
+      run: |
+        docker volume ls | grep mssql_data || docker volume create mssql_data
+
+    - name: Start services with Docker Compose
+      run: docker-compose up -d
+
+    - name: Wait for SQL Server to be ready
+      run: |
+        echo "Waiting for SQL Server to start..."
+        for i in {1..30}; do
+          if docker exec DevServer /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $MSSQL_PWD -Q "SELECT 1" > /dev/null 2>&1; then
+            echo "SQL Server is up!"
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "SQL Server did not start in time."
+        docker-compose logs
+        exit 1
+
+    - name: Test Redis connection
+      run: |
+        docker exec tms-redis-data-protection redis-cli -a $REDIS_PWD ping | grep PONG
+        docker exec tms-redis-session-cache redis-cli -p 6379 -a $REDIS_PWD ping | grep PONG
+
+    - name: Check Vault is responding
+      run: |
+        curl --fail http://localhost:8200/v1/sys/health || {
+          echo "Vault not responding"
+          docker-compose logs
+          exit 1
+        }
+
+    - name: Stop and clean up
+      if: always()
+      run: docker-compose down -v

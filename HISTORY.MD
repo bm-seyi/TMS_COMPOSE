@@ -32,3 +32,11 @@ First development version
 
 ## Fixed/Updated
 - Updated the Redis services' Docker image from `tms-redis:latest` to the official `redis` image in both `README.MD` and `docker-compose.yml`.
+
+
+## 0.1.2
+## Added
+- Introduced `compose-build-test.yml` workflow to validate that `docker-compose.yml` builds and runs without errors.
+
+## Fixed/Updated
+- Removed `external: true` from the `tms_network` definition in `docker-compose.yml`; the network is now fully managed by Docker Compose.

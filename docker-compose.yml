@@ -57,8 +57,7 @@ services:
 networks:
   tms_network:
     name: tms_network
-    external: true
-
+    
 volumes:
   mssql_data:
     name: mssql_data
