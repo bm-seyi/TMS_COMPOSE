@@ -36,7 +36,7 @@ services:
     environment:
       VAULT_ADDR: http://0.0.0.0:8200
       VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_ROOT_TOKEN_ID}
-    entrypoint: /usr/local/bin/entrypoint.sh
+    entrypoint: ["/bin/sh", "-c", "chmod +x /usr/local/bin/entrypoint.sh && /usr/local/bin/entrypoint.sh"]
 
   SqlServer:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -53,12 +53,16 @@ services:
       TZ: "Europe/London"
     volumes:
       - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL",  "grep -q 'SQL Server is now ready for client connections. This is an informational message; no user action is required.' /var/opt/mssql/log/errorlog || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
 networks:
   tms_network:
     name: tms_network
-    external: true
-
+    
 volumes:
   mssql_data:
     name: mssql_data
