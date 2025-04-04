@@ -61,3 +61,7 @@ First development version
 
 ### Removed
 - Removed the old SQL Server readiness check in the GitHub Actions workflow that manually checked the container’s availability using `sqlcmd`.
+
+## 0.1.7
+## Fixed/Updated
+- Updated the SQL Server health check logic in the GitHub Actions workflow to use a retry mechanism with a maximum of 30 retries, ensuring better handling of container startup time. The workflow now reports the current health status and exits with an error if the container does not become healthy within the retry limit.
