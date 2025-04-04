@@ -40,3 +40,8 @@ First development version
 
 ## Fixed/Updated
 - Removed `external: true` from the `tms_network` definition in `docker-compose.yml`; the network is now fully managed by Docker Compose.
+
+
+## 0.1.3
+## Fixed/Updated
+- Added step in the GitHub Actions workflow to install Docker Compose (`v2.34.0`), including a version verification step.
