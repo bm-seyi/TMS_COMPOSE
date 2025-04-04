@@ -36,8 +36,8 @@ services:
     environment:
       VAULT_ADDR: http://0.0.0.0:8200
       VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_ROOT_TOKEN_ID}
-    entrypoint: /usr/local/bin/entrypoint.sh
-
+    entrypoint: ["/bin/sh", "-c", "chmod +x /usr/local/bin/entrypoint.sh && /usr/local/bin/entrypoint.sh"]
+    
   SqlServer:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: DevServer
