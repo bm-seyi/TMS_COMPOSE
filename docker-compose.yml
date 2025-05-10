@@ -1,6 +1,6 @@
 services:
   redis-data-protection:
-    image: redis:8.0-M03
+    image: redis:alpine3.21
     container_name: tms-redis-data-protection
     restart: "no"
     ports:
@@ -12,7 +12,7 @@ services:
       /usr/local/etc/redis/redis.conf --maxmemory-policy noeviction --appendonly yes --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
   
   redis-session-cache:
-    image:  redis:8.0-M03
+    image:  redis:alpine3.21
     container_name: tms-redis-session-cache
     restart: "no"
     ports:
@@ -59,11 +59,50 @@ services:
       timeout: 5s
       retries: 12
 
+  keycloak:
+    image: keycloak/keycloak:latest
+    container_name: tms-keycloak
+    restart: no
+    networks:
+      - tms_network
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: mssql
+      KC_DB_URL: "jdbc:sqlserver://DevServer:1433;databaseName=keycloak;trustServerCertificate=true"
+      KC_DB_USERNAME: ${MSSQL_USER}
+      KC_DB_PASSWORD: ${MSSQL_PWD}
+      KC_PROXY: edge
+      KC_HOSTNAME: keycloak.localhost
+    volumes:
+     - keycloak_themes:/opt/keycloak/themes
+     - keycloak_data:/opt/keycloak/data
+    command: start-dev
+    depends_on:
+      SqlServer:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
 networks:
   tms_network:
     name: tms_network
+    external: true
     
 volumes:
   mssql_data:
     name: mssql_data
     external: true
+  keycloak_themes:
+    name: keycloak_themes
+    external: true
+  keycloak_data:
+    name: keycloak_data
+    external: true
+
