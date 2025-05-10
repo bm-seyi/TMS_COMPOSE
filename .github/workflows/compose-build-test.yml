@@ -29,6 +29,18 @@ jobs:
     - name: Create mssql_data volume if not exists
       run: |
         docker volume ls | grep mssql_data || docker volume create mssql_data
+    
+    - name: Create keycloak_themes volume if not exists
+      run: |
+        docker volume ls | grep keycloak_themes || docker volume create keycloak_themes
+
+    - name: Create keycloak_data volume if not exists
+      run: |
+        docker volume ls | grep keycloak_data || docker volume create keycloak_data
+
+    - name: Create network if not exists
+      run: |
+        docker network ls | grep tms_network || docker network create tms_network
 
     - name: Start services with Docker Compose
       run: docker-compose up -d

@@ -74,3 +74,23 @@ First development version
 
 ### Removed
 - Removed the earlier placement of the SQL Server health check script from the GitHub Actions workflow to avoid duplication and improve structure.
+
+
+## 0.1.9
+### Added
+- Added Keycloak service to docker-compose.yml with:
+  - Keycloak container configuration
+  - Network and volume configurations for Keycloak
+  - Health check for Keycloak service
+- Added step in GitHub workflow to create `tms_network` if it doesn't exist
+
+### Fixed/Updated
+- Changed Redis images from `redis:8.0-M03` to `redis:alpine3.21` for both redis-data-protection and redis-session-cache services
+- Made `tms_network` external in docker-compose.yml
+
+
+## 0.1.10
+### Added
+- Added volume creation steps in GitHub workflow for:
+  - `keycloak_themes` volume
+  - `keycloak_data` volume
