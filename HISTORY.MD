@@ -94,3 +94,29 @@ First development version
 - Added volume creation steps in GitHub workflow for:
   - `keycloak_themes` volume
   - `keycloak_data` volume
+
+
+## 0.1.11
+### Added
+- Added `/certs` directory to `.gitignore`
+- Added comprehensive Keycloak configuration including:
+  - TLS/SSL certificate support
+  - Database connection pooling settings
+  - Logging and metrics configuration
+  - Realm import functionality via `maui_realm.json`
+  - Health check and metrics features
+  - Various security and performance-related environment variables
+
+### Fixed/Updated
+- Updated Keycloak service configuration to:
+  - Remove HTTP port (8080) exposure
+  - Enhance HTTPS configuration with certificate paths
+  - Add schema name for database connection
+  - Modify hostname settings
+  - Update volume mounts for certificates and realm import
+  - Change startup command to include realm import
+  - Add numerous performance and security-related settings
+
+### Removed
+- Removed direct volume mounts for `keycloak_themes` and `keycloak_data`
+- Removed HTTP port (8080) exposure
