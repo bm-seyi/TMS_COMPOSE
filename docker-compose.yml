@@ -1,27 +1,15 @@
 services:
-  redis-data-protection:
+  redis-signalr:
     image: redis:alpine3.21
-    container_name: tms-redis-data-protection
+    container_name: tms-redis-signalr
     restart: "no"
     ports:
       - "6379:6379"
     volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./Redis/redis.conf:/usr/local/etc/redis/redis.conf
     entrypoint: ["redis-server"]
     command: >
-      /usr/local/etc/redis/redis.conf --maxmemory-policy noeviction --appendonly yes --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
-  
-  redis-session-cache:
-    image:  redis:alpine3.21
-    container_name: tms-redis-session-cache
-    restart: "no"
-    ports:
-      - "6380:6379"
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-    entrypoint: ["redis-server"]
-    command: >
-      /usr/local/etc/redis/redis.conf --maxmemory-policy allkeys-lru --appendonly no --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
+      /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PWD} --masterauth ${REDIS_PWD}
   
   HashiCorp-Vault:
     image: hashicorp/vault:latest
@@ -32,11 +20,30 @@ services:
     cap_add:
       - IPC_LOCK
     volumes:
-      - ./entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./Vault/entrypoint.sh:/usr/local/bin/entrypoint.sh
     environment:
       VAULT_ADDR: http://0.0.0.0:8200
-      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_DEV_ROOT_TOKEN_ID}
+      VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN}
     entrypoint: ["/bin/sh", "-c", "chmod +x /usr/local/bin/entrypoint.sh && /usr/local/bin/entrypoint.sh"]
+
+  vault-agent-keycloak:
+    image: hashicorp/vault:latest
+    container_name: tms-vault-agent-keycloak
+    cap_add:
+      - IPC_LOCK
+    restart: no
+    volumes:
+      - ./VaultAgent/cert-templates:/etc/templates/
+      - ./VaultAgent/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./VaultAgent/vault-agent-config.hcl:/config.hcl
+      - keycloak-certs:/etc/keycloak-certs
+    environment:
+      VAULT_ADDR: http://HashiCorp-Vault:8200
+      VAULT_TOKEN: ${VAULT_TOKEN}
+    command: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
+    depends_on:
+      HashiCorp-Vault:
+        condition: service_started
 
   SqlServer:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -94,12 +101,14 @@ services:
       KC_FEATURES:
       KC_TRANSACTION_XA_ENABLED: false
     volumes:
-     - ./maui_realm.json:/opt/keycloak/data/import/maui_realm.json
-     - ./certs:/opt/keycloak/conf
+     -  ./Keycloak/maui_realm.json:/opt/keycloak/data/import/maui_realm.json
+     -  keycloak-certs:/opt/keycloak/conf
     command: ["start-dev", "--import-realm"]
     depends_on:
       SqlServer:
         condition: service_healthy
+      vault-agent-keycloak:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 10s
@@ -115,10 +124,7 @@ volumes:
   mssql_data:
     name: mssql_data
     external: true
-  keycloak_themes:
-    name: keycloak_themes
-    external: true
-  keycloak_data:
-    name: keycloak_data
+  keycloak-certs:
+    name: keycloak-certs
     external: true
 
