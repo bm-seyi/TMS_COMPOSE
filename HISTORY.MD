@@ -145,3 +145,10 @@ First development version
 - Removed obsolete Docker volumes:
   - `keycloak_themes`
   - `keycloak_data`
+
+
+## 0.1.13
+### Fixed / Updated
+- Updated GitHub Actions workflow to reflect Redis service changes:
+  - Removed `tms-redis-data-protection` and `tms-redis-session-cache` connection tests.
+  - Replaced with a single `tms-redis-signalr` connection test to match consolidated Redis setup.

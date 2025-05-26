@@ -44,8 +44,7 @@ jobs:
     
     - name: Test Redis connection
       run: |
-        docker exec tms-redis-data-protection redis-cli -a $REDIS_PWD ping | grep PONG
-        docker exec tms-redis-session-cache redis-cli -p 6379 -a $REDIS_PWD ping | grep PONG
+        docker exec tms-redis-signalr redis-cli -a $REDIS_PWD ping | grep PONG
 
     - name: Check Vault is responding
       run: |
