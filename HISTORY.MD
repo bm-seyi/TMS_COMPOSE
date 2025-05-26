@@ -120,3 +120,35 @@ First development version
 ### Removed
 - Removed direct volume mounts for `keycloak_themes` and `keycloak_data`
 - Removed HTTP port (8080) exposure
+
+## 0.1.12
+### Added
+- Introduced `vault-agent-keycloak` service for dynamic TLS certificate retrieval via Vault Agent.
+- Added `keycloak-certs` Docker volume for storing Keycloak certificates.
+- Included new VaultAgent configuration files and entrypoint for certificate templating and retrieval.
+
+### Fixed / Updated
+- Updated `HashiCorp-Vault` service:
+  - Changed `entrypoint.sh` path and logic.
+  - Replaced `VAULT_DEV_ROOT_TOKEN_ID` with `VAULT_TOKEN` for consistency.
+- Renamed Redis service to `redis-signalr` and simplified configuration.
+- Updated volume and mount paths for Keycloak and Vault services.
+- Adjusted service dependencies to align with new Vault agent and certificate handling.
+
+### Removed
+- Removed Redis services:
+  - `redis-session-cache`
+  - `redis-data-protection`
+- Deleted legacy Vault `entrypoint.sh` used for dev-mode PKI setup.
+- Removed `maui_realm.json` from the root directory; now referenced from a new location.
+- Deleted `redis.conf` configuration file.
+- Removed obsolete Docker volumes:
+  - `keycloak_themes`
+  - `keycloak_data`
+
+
+## 0.1.13
+### Fixed / Updated
+- Updated GitHub Actions workflow to reflect Redis service changes:
+  - Removed `tms-redis-data-protection` and `tms-redis-session-cache` connection tests.
+  - Replaced with a single `tms-redis-signalr` connection test to match consolidated Redis setup.
