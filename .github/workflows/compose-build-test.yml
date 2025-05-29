@@ -29,11 +29,6 @@ jobs:
     - name: Create mssql_data volume if not exists
       run: |
         docker volume ls | grep mssql_data || docker volume create mssql_data
-    
-    - name: Create keycloak-certs volume if not exists
-      run: |
-        docker volume ls | grep keycloak-certs || docker volume create keycloak-certs
-
 
     - name: Create network if not exists
       run: |
