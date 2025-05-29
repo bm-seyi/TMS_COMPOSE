@@ -26,25 +26,6 @@ services:
       VAULT_DEV_ROOT_TOKEN_ID: ${VAULT_TOKEN}
     entrypoint: ["/bin/sh", "-c", "chmod +x /usr/local/bin/entrypoint.sh && /usr/local/bin/entrypoint.sh"]
 
-  vault-agent-keycloak:
-    image: hashicorp/vault:latest
-    container_name: tms-vault-agent-keycloak
-    cap_add:
-      - IPC_LOCK
-    restart: no
-    volumes:
-      - ./VaultAgent/cert-templates:/etc/templates/
-      - ./VaultAgent/entrypoint.sh:/usr/local/bin/entrypoint.sh
-      - ./VaultAgent/vault-agent-config.hcl:/config.hcl
-      - keycloak-certs:/etc/keycloak-certs
-    environment:
-      VAULT_ADDR: http://HashiCorp-Vault:8200
-      VAULT_TOKEN: ${VAULT_TOKEN}
-    command: ["/bin/sh", "/usr/local/bin/entrypoint.sh"]
-    depends_on:
-      HashiCorp-Vault:
-        condition: service_started
-
   SqlServer:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: DevServer
@@ -73,7 +54,7 @@ services:
     networks:
       - tms_network
     ports:
-      - "8443:8443"
+      - "8080"
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
@@ -84,47 +65,56 @@ services:
       KC_DB_SCHEMA: dbo
       KC_PROXY: edge
       KC_HOSTNAME: localhost
-      KC_HOSTNAME_STRICT_HTTPS: true
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/tls.crt
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/tls.key
-      KC_HTTP_ENABLED: false
-      KC_HTTPS_PORT: 8443
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_FORCE_BACKCHANNEL_PROTOCOL: http
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_HTTP_PORT: 8080
       KC_DB_POOL_INITIAL_SIZE: 5
       KC_DB_POOL_MIN_SIZE: 5
       KC_DB_POOL_MAX_SIZE: 100
-      KC_PROXY_ADDRESS_FORWARDING: false
+      KC_PROXY_ADDRESS_FORWARDING: true
       KC_CACHE: local
       KC_HEALTH_ENABLED: true
       KC_METRICS_ENABLED: true
       KC_LOG_LEVEL: INFO
       KC_LOG_CONSOLE_OUTPUT: default
-      KC_FEATURES:
       KC_TRANSACTION_XA_ENABLED: false
     volumes:
      -  ./Keycloak/maui_realm.json:/opt/keycloak/data/import/maui_realm.json
-     -  keycloak-certs:/opt/keycloak/conf
     command: ["start-dev", "--import-realm"]
     depends_on:
       SqlServer:
         condition: service_healthy
-      vault-agent-keycloak:
-        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 10s
       timeout: 5s
       retries: 12
 
+  nginx:
+    container_name: tms-nginx
+    image: nginx:latest 
+    networks:
+      - tms_network
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - keycloak
+   
+
 networks:
   tms_network:
     name: tms_network
     external: true
+    driver: bridge
     
 volumes:
   mssql_data:
     name: mssql_data
     external: true
-  keycloak-certs:
-    name: keycloak-certs
-    external: true
-

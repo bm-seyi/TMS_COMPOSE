@@ -152,3 +152,23 @@ First development version
 - Updated GitHub Actions workflow to reflect Redis service changes:
   - Removed `tms-redis-data-protection` and `tms-redis-session-cache` connection tests.
   - Replaced with a single `tms-redis-signalr` connection test to match consolidated Redis setup.
+
+
+## 0.2.0
+## Added
+- Added NGINX service to handle HTTPS termination and reverse proxy for Keycloak
+- Added NGINX configuration and certificates volume mount
+
+## Fixed/Updated
+- Updated Keycloak configuration to use HTTP instead of HTTPS (now handled by NGINX)
+- Updated Keycloak port mapping (now only exposes 8080 internally)
+- Updated network configuration to use bridge driver
+- Updated .gitignore to include *.pem files
+- Updated Keycloak healthcheck to use HTTP endpoint
+- Updated Keycloak proxy and hostname strict settings for HTTP operation
+
+## Removed
+- Removed Vault Agent service and all related files (cert-templates, entrypoint.sh, config)
+- Removed Keycloak certificate volume and related configurations
+- Removed Keycloak HTTPS-specific environment variables
+- Removed Keycloak dependency on Vault Agent
