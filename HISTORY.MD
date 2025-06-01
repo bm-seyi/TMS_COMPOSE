@@ -155,11 +155,11 @@ First development version
 
 
 ## 0.2.0
-## Added
+### Added
 - Added NGINX service to handle HTTPS termination and reverse proxy for Keycloak
 - Added NGINX configuration and certificates volume mount
 
-## Fixed/Updated
+### Fixed/Updated
 - Updated Keycloak configuration to use HTTP instead of HTTPS (now handled by NGINX)
 - Updated Keycloak port mapping (now only exposes 8080 internally)
 - Updated network configuration to use bridge driver
@@ -167,8 +167,33 @@ First development version
 - Updated Keycloak healthcheck to use HTTP endpoint
 - Updated Keycloak proxy and hostname strict settings for HTTP operation
 
-## Removed
+### Removed
 - Removed Vault Agent service and all related files (cert-templates, entrypoint.sh, config)
 - Removed Keycloak certificate volume and related configurations
 - Removed Keycloak HTTPS-specific environment variables
 - Removed Keycloak dependency on Vault Agent
+
+
+## 0.2.1
+### Added
+- Added SSL/TLS configuration for Keycloak with certificate files
+- Added new client attributes in `maui_realm.json` including:
+  - PKCE code challenge method
+  - Token lifespan settings
+  - Backchannel logout settings
+  - Various security protocol configurations
+
+### Fixed/Updated
+- Updated Keycloak configuration in `docker-compose.yml`:
+  - Changed exposed port from 8080 to 8443
+  - Enabled strict HTTPS and hostname settings
+  - Disabled HTTP and enabled HTTPS with proper certificate paths
+  - Updated proxy and security settings
+- Updated client configuration in `maui_realm.json` with:
+  - Additional URL fields (rootUrl, adminUrl, baseUrl)
+  - Comprehensive security attributes
+  - Updated logout redirect URI
+
+### Removed
+- Removed NGINX reverse proxy configuration (nginx.conf and related service)
+- Removed NGINX service from docker-compose.yml

@@ -54,7 +54,7 @@ services:
     networks:
       - tms_network
     ports:
-      - "8080"
+      - "8443:8443"
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
@@ -65,24 +65,25 @@ services:
       KC_DB_SCHEMA: dbo
       KC_PROXY: edge
       KC_HOSTNAME: localhost
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_HOSTNAME_STRICT_BACKCHANNEL: false
-      KC_FORCE_BACKCHANNEL_PROTOCOL: http
-      KC_HOSTNAME_STRICT: false
-      KC_HTTP_ENABLED: true
-      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_STRICT_HTTPS: true
+      KC_HOSTNAME_STRICT: true
+      KC_HTTP_ENABLED: false
+      KC_HTTPS_PORT: 8443
       KC_DB_POOL_INITIAL_SIZE: 5
       KC_DB_POOL_MIN_SIZE: 5
       KC_DB_POOL_MAX_SIZE: 100
-      KC_PROXY_ADDRESS_FORWARDING: true
+      KC_PROXY_ADDRESS_FORWARDING: false
       KC_CACHE: local
       KC_HEALTH_ENABLED: true
       KC_METRICS_ENABLED: true
       KC_LOG_LEVEL: INFO
       KC_LOG_CONSOLE_OUTPUT: default
       KC_TRANSACTION_XA_ENABLED: false
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/certs/localhost.pem
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/certs/localhost-key.pem
     volumes:
      -  ./Keycloak/maui_realm.json:/opt/keycloak/data/import/maui_realm.json
+     -  ./Keycloak/certs:/opt/keycloak/certs
     command: ["start-dev", "--import-realm"]
     depends_on:
       SqlServer:
@@ -91,22 +92,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 10s
       timeout: 5s
-      retries: 12
-
-  nginx:
-    container_name: tms-nginx
-    image: nginx:latest 
-    networks:
-      - tms_network
-    ports:
-      - "443:443"
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/certs:/etc/nginx/certs:ro
-    depends_on:
-      - keycloak
-   
+      retries: 12   
 
 networks:
   tms_network:
