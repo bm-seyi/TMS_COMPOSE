@@ -220,3 +220,15 @@ First development version
 
 ### Removed
 - Removed curl-based health check for Keycloak readiness
+
+
+## 0.2.4
+### Fixed/Updated
+- Cleaned up whitespace in the environment variables section
+
+### Removed
+- Removed the "Wait for Keycloak to start" step from the GitHub Actions workflow
+- Removed the log-based detection for Keycloak startup
+
+### Notes
+Will be migrating TMS_COMPOSE to TMS_ASPIRE, as Docker Compose and GitHub Actions are not optimal for monitoring performance, provisioning resources, or running tests effectively.
