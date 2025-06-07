@@ -48,7 +48,7 @@ services:
       retries: 12
 
   keycloak:
-    image: keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:latest
     container_name: tms-keycloak
     restart: no
     networks:
@@ -88,12 +88,7 @@ services:
     depends_on:
       SqlServer:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 12   
-
+        
 networks:
   tms_network:
     name: tms_network

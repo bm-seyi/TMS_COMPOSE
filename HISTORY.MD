@@ -197,3 +197,15 @@ First development version
 ### Removed
 - Removed NGINX reverse proxy configuration (nginx.conf and related service)
 - Removed NGINX service from docker-compose.yml
+
+
+## 0.2.2
+### Added
+- Added Keycloak health check to GitHub workflow to verify readiness before proceeding
+- Added HTTPS health check for Keycloak on port 8443 with retry logic
+
+### Fixed/Updated
+- Updated Keycloak image source from Docker Hub (`keycloak/keycloak`) to Quay.io (`quay.io/keycloak/keycloak`)
+
+### Removed
+- Removed redundant HTTP health check configuration for Keycloak from docker-compose.yml
