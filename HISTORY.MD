@@ -197,3 +197,38 @@ First development version
 ### Removed
 - Removed NGINX reverse proxy configuration (nginx.conf and related service)
 - Removed NGINX service from docker-compose.yml
+
+
+## 0.2.2
+### Added
+- Added Keycloak health check to GitHub workflow to verify readiness before proceeding
+- Added HTTPS health check for Keycloak on port 8443 with retry logic
+
+### Fixed/Updated
+- Updated Keycloak image source from Docker Hub (`keycloak/keycloak`) to Quay.io (`quay.io/keycloak/keycloak`)
+
+### Removed
+- Removed redundant HTTP health check configuration for Keycloak from docker-compose.yml#
+
+
+## 0.2.3
+### Added
+- Added timeout-based wait for Keycloak startup in GitHub Actions workflow
+
+### Fixed/Updated
+- Replaced Keycloak health check with more reliable log-based detection
+
+### Removed
+- Removed curl-based health check for Keycloak readiness
+
+
+## 0.2.4
+### Fixed/Updated
+- Cleaned up whitespace in the environment variables section
+
+### Removed
+- Removed the "Wait for Keycloak to start" step from the GitHub Actions workflow
+- Removed the log-based detection for Keycloak startup
+
+### Notes
+Will be migrating TMS_COMPOSE to TMS_ASPIRE, as Docker Compose and GitHub Actions are not optimal for monitoring performance, provisioning resources, or running tests effectively.
