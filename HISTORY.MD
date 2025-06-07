@@ -208,4 +208,15 @@ First development version
 - Updated Keycloak image source from Docker Hub (`keycloak/keycloak`) to Quay.io (`quay.io/keycloak/keycloak`)
 
 ### Removed
-- Removed redundant HTTP health check configuration for Keycloak from docker-compose.yml
+- Removed redundant HTTP health check configuration for Keycloak from docker-compose.yml#
+
+
+## 0.2.3
+### Added
+- Added timeout-based wait for Keycloak startup in GitHub Actions workflow
+
+### Fixed/Updated
+- Replaced Keycloak health check with more reliable log-based detection
+
+### Removed
+- Removed curl-based health check for Keycloak readiness

@@ -68,26 +68,10 @@ jobs:
           retries=$((retries + 1))
           done
 
-    - name: Check Keycloak health
+    - name: Wait for Keycloak to start
       run: |
-        # Wait for Keycloak to be ready (HTTPS on port 8443)
-        echo "Waiting for Keycloak to be healthy..."
-        retries=0
-        max_retries=30
-        while [ $retries -lt $max_retries ]; do
-          if curl -k -s -f https://localhost:8443/health/ready; then
-            echo -e "\nKeycloak is ready!"
-            break
-          fi
-          if [ $retries -ge $max_retries ]; then
-            echo "Keycloak did not become ready in time"
-            docker-compose logs keycloak
-            exit 1
-          fi
-          echo "Waiting for Keycloak... (attempt $((retries + 1))/$max_retries)"
-          sleep 5
-          retries=$((retries + 1))
-        done
+        echo "Waiting for Keycloak to start..."
+        timeout 90 bash -c 'until docker-compose logs keycloak 2>&1 | grep -q "Keycloak .* started in .* Listening on"; do sleep 2; done'
 
     - name: Stop and clean up
       if: always()
